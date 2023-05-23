@@ -16,8 +16,10 @@ html body {
 }
 
 main#mobile-wrapper {
-  height: 100vh;
-  max-height: 100vh;
+  height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
+  max-height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  max-height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   box-sizing: content-box;
 }

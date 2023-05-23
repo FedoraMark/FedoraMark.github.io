@@ -1,9 +1,20 @@
 /*
  * data object variable: listObject
  *
- *
- *
  */
+
+// MOBILE HEIGHT FIX
+function mobileHeightFix() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+mobileHeightFix();
+
+window.addEventListener('resize', () => {
+    mobileHeightFix();
+});
+// -----------------
 
 // Verify that jQuery is loaded
 if (typeof jQuery !== "function") {
