@@ -1,11 +1,16 @@
 @charset "UTF-8";
-main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_panel .item_button, main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_left button.back, main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_right button.back {
+main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_panel .item_button, main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_left .back, main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_right .back {
   padding: 0;
   margin: 0;
   cursor: pointer;
   color: inherit;
   border: none;
   background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex-flow: row nowrap;
 }
 
 html {
@@ -38,7 +43,7 @@ main#mobile-wrapper #nestedMenu.menu-wrapper .loading-message {
   left: 0;
   z-index: 1000;
   font-size: 48px;
-  background: #3498db;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,7 +99,7 @@ main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_left, main#mobil
   max-width: 80px;
   flex-shrink: 0;
 }
-main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_left button.back, main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_right button.back {
+main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_left .back, main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_right .back {
   box-sizing: border-box;
   font-size: 32px;
   width: 100%;
@@ -113,7 +118,16 @@ main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header_title {
   flex-grow: 1;
   font-weight: 400;
   text-align: center;
-  letter-spacing: 1px;
+}
+main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header--home .list_level_header_left, main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header--home .list_level_header_right {
+  width: 20%;
+  max-width: 100px;
+}
+main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header--home .list_level_header_left .back, main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_header--home .list_level_header_right .back {
+  padding: 0 10px 0 20px;
+  font-size: 20px;
+  white-space: nowrap;
+  text-decoration: none;
 }
 main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_panel {
   width: 100%;
@@ -169,12 +183,15 @@ main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_panel .item_button--lin
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 2px;
+  gap: 1px;
   flex-flow: column;
 }
 main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_panel .item_button--link .item_button_name_super {
   font-size: 18px;
   color: #666;
+}
+main#mobile-wrapper #nestedMenu.menu-wrapper .list_level_panel .item_button--empty::after {
+  content: none;
 }
 
 /*!

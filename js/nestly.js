@@ -21,6 +21,23 @@ if (typeof jQuery !== "function") {
     console.error("ERROR: jQuery not loaded!");
 } // else { console.log("jQuery loaded"); }
 
+// VARIABLES
+// -- sorting
+const COUNTRY_TO_TOP = "United_States";
+
+// -- show/hide statuses
+const ACTIVE_LEVEL = "active-level";
+const ACTIVE_PANEL = "active-panel";
+const INACTIVE_LEVEL = "active-level--inactive";
+
+// -- animate.css classes
+const anim = "animate__animated";
+const animIn = "animate__slideInRight";
+const animOut = "animate__slideOutRight";
+
+// -- used for detecting end of CSS animations
+const animationEndList = "animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd";
+
 // COMMON FUNCTIONS
 // get a list of values by key
 getListOfUniqueValuesByKey = (array, key) => {
@@ -37,41 +54,22 @@ cleanUpText = text => {
     return text.replaceAll('_', " ").trim();
 }
 
-// DOCUMENT READY
-$(document).ready(function() {
+function buildNestedList(nestStructureArray) {
     // VARIABLES
     const $list = $("#nestedMenu #listOfLevels");
-    const animationEndList = "animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd"; // used for detecting end of CSS animations
-    const firstCategory = structureArray.slice(1)[0].title; // title of the first list
-    const finalCategory = structureArray.slice(-1)[0].category; // category of final list (must be unique)
-
-    // -- for sorting
-    const COUNTRY_TO_TOP = "United_States";
-
-    // -- show/hide statuses
-    const ACTIVE_LEVEL = "active-level";
-    const ACTIVE_PANEL = "active-panel";
-    const INACTIVE_LEVEL = "active-level--inactive";
-
-    // -- animate.css classes
-    const anim = "animate__animated";
-    const animIn = "animate__slideInRight";
-    const animOut = "animate__slideOutRight";
+    const linkFunctionExists = (typeof generateLinkItem !== "undefined"); // checks for custom link function
+    const firstCategory = nestStructureArray.slice(1)[0].title; // title of the first list
+    const finalCategory = nestStructureArray.slice(-1)[0].category; // category of final list (must be unique)
 
     // DATA
     const cleanListArray = Object.values(listObject.listItems).filter(row => (row.IsActive.trim() === "1"));
     // -- TBD: JSON file
 
     // FUNCTIONS
-
-    /*
-     *  levelNumber - order number of the Level wrapper
-     *  category    - column/category that this list will populate with
-     *  section  - category to use as section, use null if not needed (defaults to null)
-     */
-    function generateLevelWrapper(array, levelNumber, headerTitle) {
-        const structureForLevel = structureArray[levelNumber];
-        const levelHeader = generateLevelHeader(structureForLevel.title.trim(), levelNumber !== 0);
+    // generates the level and then all of the panels within that level
+    function generateLevelWrapper(array, headerTitle, levelNumber = 0) {
+        const structureForLevel = nestStructureArray[levelNumber];
+        const levelHeader = generateLevelHeader(structureForLevel.title.trim(), levelNumber === 0);
 
         // create a new level if needed
         if ($(`.list .list_level[data-level-number='${levelNumber}']`).length === 0) {
@@ -88,21 +86,29 @@ $(document).ready(function() {
         $(`.list .list_level[data-level-number='${levelNumber}']`).append(panels);
 
         // recursion
-        if (structureArray[levelNumber + 1] !== undefined) {
+        if (nestStructureArray[levelNumber + 1] !== undefined) {
             const categoryList = getListOfUniqueValuesByKey(array, structureForLevel.category);
             categoryList.forEach(function(cat) {
                 const categoryArray = array.filter(row => (row[structureForLevel.category] === cat));
-                generateLevelWrapper(categoryArray, (levelNumber + 1), cat);
+                generateLevelWrapper(categoryArray, cat, (levelNumber + 1));
             });
         }
     }
 
     // generate the header for each level with the given title
-    function generateLevelHeader(title, includeBackButton = true) {
-        const backButton = includeBackButton ? `<button class="back">&#10094;</button>` : "";
+    function generateLevelHeader(title, isTopLevel = true) {
         const hasCustomTitle = title === "" ? "false" : "true";
+        let backButton = `<button class="back">&#10094;</button>`;
+        let topLevelClass = "";
+
+        // check for existing homeURL and if top level to change to the "< Home" link
+        if (isTopLevel && typeof homeURL !== "undefined") {
+            backButton = `<a class="back" href="${homeURL}">&#10094; Home</a>`
+            topLevelClass = "list_level_header--home"
+        }
+
         return `
-            <div class="list_level_header">
+            <div class="list_level_header ${topLevelClass}">
                 <div class="list_level_header_left">${backButton}</div>
                 <h1 class="list_level_header_title" data-custom-title="${hasCustomTitle}">${title}</h1>
                 <div class="list_level_header_right"><span><!-- empty --></span></div>
@@ -120,7 +126,6 @@ $(document).ready(function() {
         if (listOfUniqueSections.includes(cleanUpText(COUNTRY_TO_TOP))) {
             const usIndex = listOfUniqueSections.indexOf(COUNTRY_TO_TOP);
             const usSection = listOfUniqueSections.splice(usIndex, 1)[0];
-            console.log(usSection);
             listOfUniqueSections.unshift(usSection);
         }
 
@@ -166,7 +171,16 @@ $(document).ready(function() {
             `;
         } else {
             // LINK <A>
-            itemString = generateLinkItem(dataObject) // custom function
+            if (linkFunctionExists) {
+                itemString = generateLinkItem(dataObject) // custom function
+            } else {
+                // fallback item
+                itemString = `
+                    <span class="item_button item_button--empty">
+                        ${cleanUpText(dataObject[category])}
+                    </span>
+                `;
+            }
         }
 
         return `<li class="item">${itemString}</li>`;
@@ -176,6 +190,19 @@ $(document).ready(function() {
     function generatePanelSection(title) {
         return `<li class="section">${cleanUpText(title)}</li>`;
     }
+
+    // *** CODE ***
+    // Create levels and panels
+    generateLevelWrapper(cleanListArray, firstCategory);
+}
+
+// sets up the listeners for menu navigation
+function setUpListeners(wrapperSelector) {
+    // VARIABLE
+    const $menuWrapper = $(wrapperSelector);
+
+    // FUNCTIONS
+    // ****** NAVIGATION FUNCTIONS ******
 
     // activate (show) a level by the given level number; stop showing all other levels
     function activateLevel(levelNumberToActivate, panelToActivate = null, newTitle = null) {
@@ -229,8 +256,6 @@ $(document).ready(function() {
         $levelToReactivate.removeClass(INACTIVE_LEVEL);
     }
 
-    // -- TODO: Activate panel
-
     // activate the top level; fix for initial animation
     function activateTopLevel() {
         deactivateAllLevelsAndPanels();
@@ -244,16 +269,7 @@ $(document).ready(function() {
         $(`.${ACTIVE_PANEL}`).removeClass(ACTIVE_PANEL);
     }
 
-    // ---------------------------------------------------------
-    // ------------------------ ON LOAD ------------------------
-    // ---------------------------------------------------------
-
-    // Create levels and panels
-    generateLevelWrapper(cleanListArray, 0, firstCategory);
-
-    // Set up listeners
-    const $menuWrapper = $('#nestedMenu.menu-wrapper');
-
+    // *** CODE ***
     // -- back button listeners
     $menuWrapper.find(".list_level_header_left button.back").on("click", function(event) {
         const currentLevel = $(this).parents(".list_level").data("level-number");
@@ -286,7 +302,18 @@ $(document).ready(function() {
 
     // Start with the top level of the nested list
     activateTopLevel();
+}
+
+// DOCUMENT READY
+$(document).ready(function() {
+    // Build nested menu lists if structure array is found
+    if (typeof structureArray !== "undefined") {
+        buildNestedList(structureArray);
+    }
+
+    // Hook up listeners for navigation
+    setUpListeners('#nestedMenu.menu-wrapper');
 
     // When done loading, update the loading-message class to hide it
-    $menuWrapper.find('.loading-message').addClass('loading-message--done');
+    $('#nestedMenu.menu-wrapper').find('.loading-message').addClass('loading-message--done');
 });
