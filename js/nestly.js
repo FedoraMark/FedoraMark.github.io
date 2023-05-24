@@ -60,16 +60,7 @@ function buildNestedList(nestStructureArray) {
     const linkFunctionExists = (typeof generateLinkItem !== "undefined"); // checks for custom link function
     const firstCategory = nestStructureArray.slice(1)[0].title; // title of the first list
     const finalCategory = nestStructureArray.slice(-1)[0].category; // category of final list (must be unique)
-
-    // DATA
-    var listObject = $.getJSON(jsonURL, function() {
-            console.log("success");
-        })
-        .fail(function() {
-            console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
-        })
-
-    const cleanListArray = Object.values(listObject.listItems).filter(row => (row.IsActive.trim() === "1"));
+    const cleanListArray = [];
 
     // FUNCTIONS
     // generates the level and then all of the panels within that level
@@ -198,8 +189,16 @@ function buildNestedList(nestStructureArray) {
     }
 
     // *** CODE ***
-    // Create levels and panels
-    generateLevelWrapper(cleanListArray, firstCategory);
+
+    const listObject = $.getJSON(jsonURL, function() {
+            // Create levels and panels
+            cleanListArray = Object.values(listObject.listItems).filter(row => (row.IsActive.trim() === "1"));
+            generateLevelWrapper(cleanListArray, firstCategory);
+        })
+        .fail(function() {
+            console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
+        })
+
 }
 
 // sets up the listeners for menu navigation
