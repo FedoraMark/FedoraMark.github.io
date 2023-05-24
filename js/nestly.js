@@ -189,11 +189,10 @@ function buildNestedList(nestStructureArray) {
 
     // *** CODE ***
     // read JSON file at "jsonURL"
-    $.getJSON(jsonURL, function(listObject) {
+    $.getJSON(jsonURL)
+        .then(function(listObject) {
             // SUCCESS - create levels and panels
             const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1"));
-            console.log("cleanListArray: ", cleanListArray);
-            console.log("firstCategory: ", firstCategory);
             generateLevelWrapper(cleanListArray, firstCategory);
         })
         .fail(function() {
@@ -203,8 +202,10 @@ function buildNestedList(nestStructureArray) {
 }
 
 // sets up the listeners for menu navigation
-function setUpListeners(wrapperSelector) {
-    const $menuWrapper = $(wrapperSelector);
+function setUpListeners($menuWrapper) {
+    const ACTIVE_LEVEL = "active-level";
+    const ACTIVE_PANEL = "active-panel";
+    const INACTIVE_LEVEL = "active-level--inactive";
 
     // activate (show) a level by the given level number; stop showing all other levels
     function activateLevel(levelNumberToActivate, panelToActivate = null, newTitle = null) {
@@ -314,8 +315,9 @@ $(document).ready(function() {
     }
 
     // Hook up listeners for navigation
-    setUpListeners('#nestedMenu.menu-wrapper');
+    const $nestedWrapper = $('#nestedMenu.menu-wrapper');
+    setUpListeners($nestedWrapper);
 
     // When done loading, update the loading-message class to hide it
-    $('#nestedMenu.menu-wrapper').find('.loading-message').addClass('loading-message--done');
+    $nestedWrapper.find('.loading-message').addClass('loading-message--done');
 });
