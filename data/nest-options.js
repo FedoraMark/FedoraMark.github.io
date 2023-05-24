@@ -5,7 +5,7 @@
  *
  * URL of the JSON file of list data
  */
-const jsonURL = "./data-file.json";
+const jsonURL = "./data/data-file.json";
 
 /*
  * homeURL
