@@ -187,22 +187,18 @@ function buildNestedList(nestStructureArray) {
         return `<li class="section">${cleanUpText(title)}</li>`;
     }
 
-    function getJsonFile() {
-        return $.getJSON(jsonURL)
-            .then(function(listObject) {
-                console.log("success");
-            })
-            .fail(function() {
-                console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
-            });
-    }
-
     // *** CODE ***
     // read JSON file at "jsonURL"
-    getJsonFile().then(function(listObject) {
-        const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1"));
-        generateLevelWrapper(cleanListArray, firstCategory);
-    });
+    $.getJSON(jsonURL).
+        .dont(function(listObject) {
+            console.log("success");
+            // SUCCESS - create levels and panels
+            const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1")); // remove inactive data
+            generateLevelWrapper(cleanListArray, firstCategory);
+        })
+        .fail(function() {
+            console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
+        });
 
 }
 
