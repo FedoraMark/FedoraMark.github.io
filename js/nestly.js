@@ -1,3 +1,8 @@
+/*
+ * data object variable: listObject
+ *
+ */
+
 // MOBILE HEIGHT FIX
 function mobileHeightFix() {
     let vh = window.innerHeight * 0.01;
@@ -182,15 +187,18 @@ function buildNestedList(nestStructureArray) {
         return `<li class="section">${cleanUpText(title)}</li>`;
     }
 
-    // begin to process the json data after removing inactive data
-    function processJsonData(json) {
-        const cleanListArray = json.filter(row => (row.IsActive.trim() === "1")); // remove inactive data
-        generateLevelWrapper(cleanListArray, firstCategory);
-    }
-
     // *** CODE ***
     // read JSON file at "jsonURL"
-    $.getJSON(jsonURL, processJsonData(json) {});
+    $.getJSON(jsonURL)
+        .done(function(listObject) {
+            console.log("success");
+            // SUCCESS - create levels and panels
+            const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1")); // remove inactive data
+            generateLevelWrapper(cleanListArray, firstCategory);
+        })
+        .fail(function() {
+            console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
+        });
 
 }
 
@@ -310,6 +318,7 @@ $(document).ready(function() {
     // Hook up listeners for navigation
     const $nestedWrapper = $('#nestedMenu.menu-wrapper');
     setUpListeners($nestedWrapper);
+    console.log("listening");
 
     // When done loading, update the loading-message class to hide it
     $nestedWrapper.find('.loading-message').addClass('loading-message--done');
