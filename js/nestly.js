@@ -190,7 +190,7 @@ function buildNestedList(nestStructureArray) {
     // *** CODE ***
     // read JSON file at "jsonURL"
     $.getJSON(jsonURL).
-        .dont(function(listObject) {
+        .done(function(listObject) {
             console.log("success");
             // SUCCESS - create levels and panels
             const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1")); // remove inactive data
