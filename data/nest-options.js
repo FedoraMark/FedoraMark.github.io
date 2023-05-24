@@ -1,4 +1,13 @@
 /*
+ * jsonURL
+ *
+ * String
+ *
+ * URL of the JSON file of list data
+ */
+const jsonURL = "./data-file.json";
+
+/*
  * homeURL
  *
  * String

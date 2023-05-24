@@ -62,8 +62,14 @@ function buildNestedList(nestStructureArray) {
     const finalCategory = nestStructureArray.slice(-1)[0].category; // category of final list (must be unique)
 
     // DATA
+    var listObject = $.getJSON(jsonURL, function() {
+            console.log("success");
+        })
+        .fail(function() {
+            console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
+        })
+
     const cleanListArray = Object.values(listObject.listItems).filter(row => (row.IsActive.trim() === "1"));
-    // -- TBD: JSON file
 
     // FUNCTIONS
     // generates the level and then all of the panels within that level
