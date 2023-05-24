@@ -1,8 +1,3 @@
-/*
- * data object variable: listObject
- *
- */
-
 // MOBILE HEIGHT FIX
 function mobileHeightFix() {
     let vh = window.innerHeight * 0.01;
@@ -188,17 +183,14 @@ function buildNestedList(nestStructureArray) {
     }
 
     // begin to process the json data after removing inactive data
-    function processJsonData(listObject) {
-        const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1")); // remove inactive data
+    function processJsonData(json) {
+        const cleanListArray = json.filter(row => (row.IsActive.trim() === "1")); // remove inactive data
         generateLevelWrapper(cleanListArray, firstCategory);
     }
 
     // *** CODE ***
     // read JSON file at "jsonURL"
-    $.getJSON(jsonURL, processJsonData(listObject) {})
-        .fail(function() {
-            console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
-        });
+    $.getJSON(jsonURL, processJsonData(json) {});
 
 }
 
