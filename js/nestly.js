@@ -193,6 +193,7 @@ function buildNestedList(nestStructureArray) {
             // SUCCESS - create levels and panels
             const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1"));
             console.log("cleanListArray: ", cleanListArray);
+            console.log("firstCategory: ", firstCategory);
             generateLevelWrapper(cleanListArray, firstCategory);
         })
         .fail(function() {
