@@ -190,8 +190,9 @@ function buildNestedList(nestStructureArray) {
     // *** CODE ***
     // read JSON file at "jsonURL"
     $.getJSON(jsonURL, function(listObject) {
+        console.log(listObject);
             // SUCCESS - create levels and panels
-            const cleanListArray = Object.values(listObject.listItems).filter(row => (row.IsActive.trim() === "1"));
+            const cleanListArray = Object.values(listObject).filter(row => (row.IsActive.trim() === "1"));
             generateLevelWrapper(cleanListArray, firstCategory);
         })
         .fail(function() {
