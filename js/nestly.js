@@ -54,7 +54,7 @@ cleanUpText = text => {
     return text.replaceAll('_', " ").trim();
 }
 
-function buildNestedList(nestStructureArray) {
+function buildNestedList(nestStructureArray, jsonData) {
     // VARIABLES
     const $list = $("#nestedMenu #listOfLevels");
     const linkFunctionExists = (typeof generateLinkItem !== "undefined"); // checks for custom link function
@@ -188,17 +188,8 @@ function buildNestedList(nestStructureArray) {
     }
 
     // *** CODE ***
-    // read JSON file at "jsonURL"
-    $.getJSON(jsonURL)
-        .done(function(listObject) {
-            console.log("success");
-            // SUCCESS - create levels and panels
-            const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1")); // remove inactive data
-            generateLevelWrapper(cleanListArray, firstCategory);
-        })
-        .fail(function() {
-            console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
-        });
+    const cleanListArray = jsonData.filter(row => (row.IsActive.trim() === "1")); // remove inactive data
+    generateLevelWrapper(cleanListArray, firstCategory);
 
 }
 
@@ -310,16 +301,31 @@ function setUpListeners($menuWrapper) {
 
 // DOCUMENT READY
 $(document).ready(function() {
-    // Build nested menu lists if structure array is found
-    if (typeof structureArray !== "undefined") {
-        buildNestedList(structureArray);
+    function initializeMenus() {
+        const $nestedWrapper = $('#nestedMenu.menu-wrapper');
+
+        // Hook up listeners for navigation
+        setUpListeners($nestedWrapper);
+        console.log("listening");
+
+        // When done loading, update the loading-message class to hide it
+        $nestedWrapper.find('.loading-message').addClass('loading-message--done');
     }
 
-    // Hook up listeners for navigation
-    const $nestedWrapper = $('#nestedMenu.menu-wrapper');
-    setUpListeners($nestedWrapper);
-    console.log("listening");
 
-    // When done loading, update the loading-message class to hide it
-    $nestedWrapper.find('.loading-message').addClass('loading-message--done');
+    // Build nested menu lists if structure array is found, otherwise hook up menus
+    if (typeof structureArray !== "undefined" && typeof jsonURL !== "undefined") {
+        $.getJSON(jsonURL)
+            .done(function(jsonData) {
+                console.log("success");
+                buildNestedList(structureArray, jsonData);
+                initializeMenus();
+            })
+            .fail(function() {
+                console.error("ERROR: Could not read JSON file at '" + jsonURL + "'.");
+            });
+    } else {
+        initializeMenus();
+    }
+
 });
