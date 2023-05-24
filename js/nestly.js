@@ -189,7 +189,7 @@ function buildNestedList(nestStructureArray) {
 
     // *** CODE ***
     // read JSON file at "jsonURL"
-    $.getJSON(jsonURL).
+    $.getJSON(jsonURL)
         .done(function(listObject) {
             console.log("success");
             // SUCCESS - create levels and panels
