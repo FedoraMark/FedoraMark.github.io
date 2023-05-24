@@ -190,9 +190,9 @@ function buildNestedList(nestStructureArray) {
     // *** CODE ***
     // read JSON file at "jsonURL"
     $.getJSON(jsonURL, function(listObject) {
-        console.log(listObject);
             // SUCCESS - create levels and panels
-            const cleanListArray = Object.values(listObject).filter(row => (row.IsActive.trim() === "1"));
+            const cleanListArray = listObject.filter(row => (row.IsActive.trim() === "1"));
+            console.log("cleanListArray: ", cleanListArray);
             generateLevelWrapper(cleanListArray, firstCategory);
         })
         .fail(function() {
@@ -203,11 +203,7 @@ function buildNestedList(nestStructureArray) {
 
 // sets up the listeners for menu navigation
 function setUpListeners(wrapperSelector) {
-    // VARIABLE
     const $menuWrapper = $(wrapperSelector);
-
-    // FUNCTIONS
-    // ****** NAVIGATION FUNCTIONS ******
 
     // activate (show) a level by the given level number; stop showing all other levels
     function activateLevel(levelNumberToActivate, panelToActivate = null, newTitle = null) {
